@@ -7,3 +7,5 @@ Git leaks timezone information via `AuthorDate` and `CommitDate`, which could re
 
 Move `post-commit` to `$GIT_DIR/.git/hooks/`. This will change the timezone attached to the commit, putting you in UTC±0000.
 
+Inspired by [gitdate](https://github.com/isislovecruft/scripts/blob/master/gitdate).
+

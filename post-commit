@@ -3,19 +3,21 @@
 # Save this as a post-commit hook to use Git without leaking your timezone.
 # All commits will be in UTC±0000.
 
-author_date=$(git log -1 --date=rfc2822 --pretty=format:%ad)
-commit_date=$(git log -1 --date=rfc2822 --pretty=format:%cd)
+set -euo pipefail
 
-unix_author_date=$(git log -1 --date=unix --pretty=format:%ad)
-unix_commit_date=$(git log -1 --date=unix --pretty=format:%cd)
+author_date=$(git log -1 --date=rfc2822 --format=%ad)
+commit_date=$(git log -1 --date=rfc2822 --format=%cd)
+
+unix_author_date=$(git log -1 --date=unix --format=%ad)
+unix_commit_date=$(git log -1 --date=unix --format=%cd)
 
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
-    utc_author_date=$(date -d @$unix_author_date -uR)
-    utc_commit_date=$(date -d @$unix_commit_date -uR)
+    utc_author_date=$(date -d @"$unix_author_date" -uR)
+    utc_commit_date=$(date -d @"$unix_commit_date" -uR)
 else
-    utc_author_date=$(date -juRr $unix_author_date)
-    utc_commit_date=$(date -juRr $unix_commit_date)
+    utc_author_date=$(date -juRr "$unix_author_date")
+    utc_commit_date=$(date -juRr "$unix_commit_date")
 fi
 
 if [[ "$utc_author_date" == "$author_date" ]] \
@@ -29,4 +31,3 @@ else
     export GIT_COMMITTER_DATE=$utc_commit_date
     git commit --amend --date="$utc_author_date"
 fi
-

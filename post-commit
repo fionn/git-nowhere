@@ -5,6 +5,11 @@
 
 set -euo pipefail
 
+hook_file="$(git rev-parse --show-toplevel)/.git/hooks/post-commit"
+chmod -x "$hook_file"
+
+trap 'chmod +x "$hook_file"' EXIT
+
 author_date=$(git log -1 --date=rfc2822 --format=%ad)
 commit_date=$(git log -1 --date=rfc2822 --format=%cd)
 
@@ -29,5 +34,5 @@ else
     echo "Setting CommitDate: $utc_commit_date"
 
     export GIT_COMMITTER_DATE=$utc_commit_date
-    git commit --amend --date="$utc_author_date"
+    git commit --amend --no-edit --date="$utc_author_date" 2>/dev/null
 fi
